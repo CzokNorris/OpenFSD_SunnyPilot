@@ -205,9 +205,13 @@ def test_simulator():
     simulator.advance_cycle()
     assert simulator.cycle_count == 1
     
-    for _ in range(63):
+    # Advance to cycle 63, then one more to wrap to 0
+    for _ in range(62):  # Advance 62 more times to reach cycle 63
         simulator.advance_cycle()
-    assert simulator.cycle_count == 0  # Should wrap around
+    assert simulator.cycle_count == 63
+    
+    simulator.advance_cycle()  # One more to wrap to 0
+    assert simulator.cycle_count == 0  # Should wrap around from 63 to 0
     
     # Stop simulator
     simulator.stop()

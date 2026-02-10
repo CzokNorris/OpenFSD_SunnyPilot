@@ -49,8 +49,10 @@ class FlexRayMessage:
         # Calculate CRC
         crc = calculate_frame_crc(header, self.payload)
         
-        # Build complete frame
-        frame = header + self.payload + struct.pack('>I', crc)[1:]  # 24-bit CRC
+        # Build complete frame with 24-bit CRC
+        # Pack CRC as 3 separate bytes (24 bits)
+        crc_bytes = struct.pack('>BBB', (crc >> 16) & 0xFF, (crc >> 8) & 0xFF, crc & 0xFF)
+        frame = header + self.payload + crc_bytes
         return frame
     
     @classmethod

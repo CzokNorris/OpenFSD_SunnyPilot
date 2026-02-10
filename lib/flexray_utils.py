@@ -145,11 +145,19 @@ def validate_cycle_timing(config: 'FlexRayBusConfig') -> List[str]:
     
     Returns:
         List of validation warnings/errors (empty if valid)
+    
+    Note:
+        This assumes a default slot duration of 50us. For precise validation,
+        the actual configured slot duration should be used.
     """
     issues = []
     
+    # Default slot duration assumption (in microseconds)
+    # This should ideally come from the actual configuration
+    DEFAULT_SLOT_DURATION_US = 50
+    
     # Check static segment fits in cycle
-    static_time = config.static_slots * 50  # Assuming 50us per slot
+    static_time = config.static_slots * DEFAULT_SLOT_DURATION_US
     if static_time >= config.cycle_duration:
         issues.append(f"Static segment ({static_time}us) exceeds cycle duration ({config.cycle_duration}us)")
     
