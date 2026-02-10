@@ -16,7 +16,6 @@ dependencies = [
   "sympy",        # rednose + friends
   "crcmod-plus",  # cars + qcomgpsd
   "tqdm",         # cars (fw_versions.py) on start + many one-off uses
-
   # core
   "cffi",
   "scons",
@@ -24,7 +23,6 @@ dependencies = [
   "Cython",
   "setuptools",
   "numpy >=2.0",
-
   # body / webrtcd
   "aiohttp",
   "aiortc",
@@ -32,43 +30,45 @@ dependencies = [
   # with the latest release
   "pyopenssl < 24.3.0",
   "pyaudio",
-
   # panda
   "libusb1",
   "spidev; platform_system == 'Linux'",
-
   # modeld
   "onnx >= 1.14.0",
-
   # logging
   "pyzmq",
   "sentry-sdk",
   "xattr",  # used in place of 'os.getxattr' for macOS compatibility
-
   # athena
   "PyJWT",
   "json-rpc",
   "websocket_client",
-
   # acados deps
   "casadi >=3.6.6",  # 3.12 fixed in 3.6.6
-
   # joystickd
   "inputs",
-
   # these should be removed
   "psutil",
   "pycryptodome", # used in updated/casync, panda, body, and a test
   "setproctitle",
-
   # logreader
   "zstandard",
-
   # ui
   "raylib > 5.5.0.3",
   "qrcode",
   "mapbox-earcut",
   "jeepney",
+  "pytest>=9.0.2",
+  "pytest-xdist>=3.7.1.dev24",
+  "pytest-asyncio>=0.23",
+  "pytest-cpp>=2.6.0",
+  "parameterized>=0.8.1",
+  "pytest-timeout>=2.4.0",
+  "pytest-mock>=3.15.1",
+  "tabulate>=0.9.0",
+  "hypothesis>=6.47.5",
+  "jinja2>=3.1.6",
+  "pillow>=12.1.0",
 ]
 
 [project.optional-dependencies]
@@ -177,6 +177,7 @@ lint.ignore = [
   "NPY002",  # new numpy random syntax is worse
   "UP045", "UP007",  # these don't play nice with raylib atm
 ]
+lint.flake8-implicit-str-concat.allow-multiline = false
 line-length = 160
 target-version ="py311"
 exclude = [
@@ -193,7 +194,6 @@ exclude = [
   "*.ipynb",
   "generated",
 ]
-lint.flake8-implicit-str-concat.allow-multiline = false
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "selfdrive".msg = "Use openpilot.selfdrive"
