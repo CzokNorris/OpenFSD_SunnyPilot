@@ -4,11 +4,11 @@ FlexRay Utilities
 Helper functions and utilities for working with FlexRay messages and data.
 """
 
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Any
 import struct
 
 
-def bytes_to_signals(data: bytes, signal_map: Dict[str, Tuple[int, int, str]]) -> Dict[str, any]:
+def bytes_to_signals(data: bytes, signal_map: Dict[str, Tuple[int, int, str]]) -> Dict[str, Any]:
     """
     Extract signals from FlexRay payload bytes
     
@@ -40,7 +40,7 @@ def bytes_to_signals(data: bytes, signal_map: Dict[str, Tuple[int, int, str]]) -
     return signals
 
 
-def signals_to_bytes(signals: Dict[str, any], signal_map: Dict[str, Tuple[int, int, str]], 
+def signals_to_bytes(signals: Dict[str, Any], signal_map: Dict[str, Tuple[int, int, str]], 
                      payload_length: int = 8) -> bytes:
     """
     Pack signals into FlexRay payload bytes
