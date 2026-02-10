@@ -139,8 +139,9 @@ class UIState(UIStateSP):
     elif not self.sm.alive["wideRoadCameraState"] or not self.sm.valid["wideRoadCameraState"]:
       self.light_sensor = -1
 
-    # Update started state
-    self.started = self.sm["deviceState"].started and self.ignition
+    # Update started state - force onroad if OnroadMode is enabled
+    force_onroad = self.params.get_bool("OnroadMode")
+    self.started = (self.sm["deviceState"].started and self.ignition) or force_onroad
 
     # Update recording audio state
     self.recording_audio = self.params.get_bool("RecordAudio") and self.started

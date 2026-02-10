@@ -767,6 +767,10 @@
     "title": "Force Offroad Mode",
     "description": ""
   },
+  "OnroadMode": {
+    "title": "Force Onroad Mode",
+    "description": ""
+  },
   "Offroad_CarUnrecognized": {
     "title": "Offroad Car Unrecognized",
     "description": ""

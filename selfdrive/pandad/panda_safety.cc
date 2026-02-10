@@ -93,3 +93,8 @@ bool PandaSafety::getOffroadMode() {
   auto offroad_mode = params_.getBool("OffroadMode");
   return offroad_mode;
 }
+
+bool PandaSafety::getOnroadMode() {
+  auto onroad_mode = params_.getBool("OnroadMode");
+  return onroad_mode;
+}

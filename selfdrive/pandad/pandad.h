@@ -21,6 +21,7 @@ public:
   PandaSafety(const std::vector<Panda *> &pandas) : pandas_(pandas) {}
   void configureSafetyMode(bool is_onroad);
   bool getOffroadMode();
+  bool getOnroadMode();
 
 private:
   void updateMultiplexingMode();

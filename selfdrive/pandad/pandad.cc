@@ -208,7 +208,7 @@ void fill_panda_can_state(cereal::PandaState::PandaCanState::Builder &cs, const 
   cs.setCanCoreResetCnt(can_health.can_core_reset_cnt);
 }
 
-std::optional<bool> send_panda_states(PubMaster *pm, const std::vector<Panda *> &pandas, bool is_onroad, bool spoofing_started, bool always_offroad) {
+std::optional<bool> send_panda_states(PubMaster *pm, const std::vector<Panda *> &pandas, bool is_onroad, bool spoofing_started, bool always_offroad, bool always_onroad) {
   bool ignition_local = false;
   const uint32_t pandas_cnt = pandas.size();
 
@@ -256,7 +256,7 @@ std::optional<bool> send_panda_states(PubMaster *pm, const std::vector<Panda *> 
       health.ignition_line_pkt = 0;
     }
 
-    ignition_local |= ((health.ignition_line_pkt != 0) || (health.ignition_can_pkt != 0)) && !always_offroad;
+    ignition_local |= (((health.ignition_line_pkt != 0) || (health.ignition_can_pkt != 0)) && !always_offroad) || always_onroad;
 
     pandaStates.push_back(health);
   }
@@ -344,14 +344,14 @@ void send_peripheral_state(Panda *panda, PubMaster *pm) {
   pm->send("peripheralState", msg);
 }
 
-void process_panda_state(std::vector<Panda *> &pandas, PubMaster *pm, bool engaged, bool engaged_mads, bool is_onroad, bool spoofing_started, bool always_offroad) {
+void process_panda_state(std::vector<Panda *> &pandas, PubMaster *pm, bool engaged, bool engaged_mads, bool is_onroad, bool spoofing_started, bool always_offroad, bool always_onroad) {
   std::vector<std::string> connected_serials;
   for (Panda *p : pandas) {
     connected_serials.push_back(p->hw_serial());
   }
 
   {
-    auto ignition_opt = send_panda_states(pm, pandas, is_onroad, spoofing_started, always_offroad);
+    auto ignition_opt = send_panda_states(pm, pandas, is_onroad, spoofing_started, always_offroad, always_onroad);
     if (!ignition_opt) {
       LOGE("Failed to get ignition_opt");
       return;
@@ -468,6 +468,7 @@ void pandad_run(std::vector<Panda *> &pandas) {
   bool engaged_mads = false;
   bool is_onroad = false;
   bool always_offroad = false;
+  bool always_onroad = false;
 
   // Main loop: receive CAN data and process states
   while (!do_exit && check_all_connected(pandas)) {
@@ -485,7 +486,8 @@ void pandad_run(std::vector<Panda *> &pandas) {
       engaged_mads = process_mads_heartbeat(&sm);
       is_onroad = params.getBool("IsOnroad");
       always_offroad = panda_safety.getOffroadMode();
-      process_panda_state(pandas, &pm, engaged, engaged_mads, is_onroad, spoofing_started, always_offroad);
+      always_onroad = panda_safety.getOnroadMode();
+      process_panda_state(pandas, &pm, engaged, engaged_mads, is_onroad, spoofing_started, always_offroad, always_onroad);
       panda_safety.configureSafetyMode(is_onroad);
     }
 
