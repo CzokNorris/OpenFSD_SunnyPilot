@@ -1261,7 +1261,6 @@ dependencies = [
     { name = "cffi" },
     { name = "crcmod" },
     { name = "cython" },
-    { name = "dearpygui" },
     { name = "future-fstrings" },
     { name = "inputs" },
     { name = "json-rpc" },
@@ -1337,6 +1336,7 @@ testing = [
     { name = "ruff" },
 ]
 tools = [
+    { name = "dearpygui", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux') or sys_platform == 'darwin' or sys_platform == 'win32'" },
     { name = "metadrive-simulator", marker = "platform_machine != 'aarch64'" },
 ]
 
@@ -1353,7 +1353,7 @@ requires-dist = [
     { name = "crcmod" },
     { name = "cython" },
     { name = "dbus-next", marker = "extra == 'dev'" },
-    { name = "dearpygui", specifier = ">=2.1.0" },
+    { name = "dearpygui", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'tools') or (sys_platform == 'darwin' and extra == 'tools') or (sys_platform == 'win32' and extra == 'tools')", specifier = ">=2.1.0" },
     { name = "dictdiffer", marker = "extra == 'dev'" },
     { name = "future-fstrings" },
     { name = "hypothesis", marker = "extra == 'testing'", specifier = "==6.47.*" },
@@ -4379,7 +4379,7 @@ wheels = [
 
 [[package]]
 name = "pytest-xdist"
-version = "3.7.1.dev24+g2b4372b"
+version = "3.7.1.dev24+g2b4372bd6"
 source = { git = "https://github.com/sshane/pytest-xdist?rev=2b4372bd62699fb412c4fe2f95bf9f01bd2018da#2b4372bd62699fb412c4fe2f95bf9f01bd2018da" }
 dependencies = [
     { name = "execnet" },

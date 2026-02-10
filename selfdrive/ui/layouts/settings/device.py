@@ -11,9 +11,12 @@ from openpilot.system.ui.lib.application import gui_app
 from openpilot.system.ui.widgets import Widget, DialogResult
 from openpilot.system.ui.widgets.confirm_dialog import confirm_dialog, alert_dialog
 from openpilot.system.ui.widgets.html_render import HtmlRenderer
-from openpilot.system.ui.widgets.list_view import text_item, button_item, dual_button_item
+from openpilot.system.ui.widgets.list_view import text_item, button_item, dual_button_item, toggle_item
 from openpilot.system.ui.widgets.option_dialog import MultiOptionDialog
 from openpilot.system.ui.widgets.scroller import Scroller
+
+# File-based flag for force onroad (development use)
+FORCE_ONROAD_FILE = "/tmp/force_onroad"
 
 # Description constants
 DESCRIPTIONS = {
@@ -24,6 +27,7 @@ DESCRIPTIONS = {
       "up or 9° down. openpilot is continuously calibrating, resetting is rarely required."
   ),
   'review_guide': "Review the rules, features, and limitations of openpilot",
+  'force_onroad': "Force the device into onroad mode without ignition signal. For development only on vehicles without 12V ignition detection.",
 }
 
 
@@ -44,6 +48,15 @@ class DeviceLayout(Widget):
     dongle_id = self._params.get("DongleId") or "N/A"
     serial = self._params.get("HardwareSerial") or "N/A"
 
+    force_onroad_toggle = toggle_item(
+      "Force Onroad",
+      DESCRIPTIONS['force_onroad'],
+      initial_state=os.path.exists(FORCE_ONROAD_FILE),
+      callback=self._toggle_force_onroad,
+      enabled=lambda: not ui_state.engaged,
+    )
+    self._force_onroad_toggle = force_onroad_toggle
+
     items = [
       text_item("Dongle ID", dongle_id),
       text_item("Serial", serial),
@@ -53,6 +66,7 @@ class DeviceLayout(Widget):
       regulatory_btn := button_item("Regulatory", "VIEW", callback=self._on_regulatory),
       button_item("Review Training Guide", "REVIEW", DESCRIPTIONS['review_guide'], self._on_review_training_guide),
       button_item("Change Language", "CHANGE", callback=self._show_language_selection, enabled=ui_state.is_offroad),
+      force_onroad_toggle,
       dual_button_item("Reboot", "Power Off", left_callback=self._reboot_prompt, right_callback=self._power_off_prompt),
     ]
     regulatory_btn.set_visible(TICI)
@@ -148,3 +162,22 @@ class DeviceLayout(Widget):
     )
 
   def _on_review_training_guide(self): pass
+
+  def _toggle_force_onroad(self):
+    if ui_state.engaged:
+      gui_app.set_modal_overlay(lambda: alert_dialog("Disengage to Toggle Force Onroad"))
+      self._force_onroad_toggle.action_item.set_state(os.path.exists(FORCE_ONROAD_FILE))
+      return
+
+    current_state = os.path.exists(FORCE_ONROAD_FILE)
+    new_state = not current_state
+    if new_state:
+      # Create the flag file
+      open(FORCE_ONROAD_FILE, 'w').close()
+    else:
+      # Remove the flag file
+      try:
+        os.remove(FORCE_ONROAD_FILE)
+      except FileNotFoundError:
+        pass
+    self._force_onroad_toggle.action_item.set_state(new_state)
