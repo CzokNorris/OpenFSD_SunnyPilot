@@ -1,0 +1,10 @@
+# OpenFSD_SunnyPilot Requirements
+# Python dependencies for FlexRay Panda experiments
+
+# Core dependencies (none required for basic functionality)
+# The implementation uses only Python standard library
+
+# Development dependencies (optional)
+# pytest>=7.0.0  # For running tests
+# black>=22.0.0  # For code formatting
+# pylint>=2.12.0  # For code linting
